@@ -1,0 +1,726 @@
+<?xml version="1.0"?>
+<!-- 
+Build file requires the following jars to run:
+- pyAntTasks (http://code.google.com/p/pyanttasks/downloads/list)
+- apache-ant-dotnet-1.0 (http://ant.apache.org/antlibs/dotnet/)
+Add them into ANT_HOME/lib so that ant can pick it up.
+
+To compile C# you will also need to have NAnt installed
+
+Also needs a build.properties file - copy the appropriate one from build.properties.*
+into place to define the correct api endpoint
+-->
+<project name="api_sdks"
+         default="build"
+         xmlns:dn="antlib:org.apache.ant.dotnet"
+         xmlns="antlib:org.apache.tools.ant"
+         basedir=".">
+
+  <!-- properties -->
+
+  <property file="build.properties"/>
+  <property name="base.filename"
+            value="buyat_api_client"/>
+  <property name="version"
+            value="1.0"/>
+  <property name="dist.dir"
+            value="./dist"/>
+  <property name="tmp.dir"
+            value="./tmp"/>
+  <property name="php4"
+            value="php4"/>
+  <property name="php5"
+            value="php5"/>
+  <property name="java"
+            value="java"/>
+  <property name="javadoc"
+            value="javadoc"/>
+  <property name="ruby"
+            value="ruby"/>
+  <property name="python"
+            value="python"/>
+  <property name="scala"
+            value="scala"/>
+  <property name="scaladoc"
+            value="scaladoc"/>
+  <property name="tcl"
+            value="tcl"/>            
+  <property name="javascript"
+            value="javascript"/>
+	<property name="c#"
+	            value="csharp"/>
+	<property name="src.dir"
+            value="../src"/>
+  <property name="demo.dir"
+            value="../demos"/>
+  <property name="test.dir"
+            value="../tests"/>
+  <property name="demo"
+            value="demo"/>
+  <property name="licence.filename"
+            value="${src.dir}/licence.txt"/>
+  
+  <!-- Tokens for replacement -->          
+  <property name="api.endpoint.token"
+            value="API_ENDPOINT"/>         
+  <property name="api.host.token"
+            value="API_HOST"/>			         
+  <property name="api.path.token"
+            value="API_PATH"/>
+  <property name="api.endpoint.short.token"
+            value="API_ENDPOINT_SHORT"/>
+			
+  <property name="licence.token"
+            value="LICENCE"/>
+
+  <!-- Source directories -->            
+  <property name="php4.src.dir"
+            value="${src.dir}/${php4}"/>
+  <property name="php5.src.dir"
+            value="${src.dir}/${php5}"/>
+  <property name="java.src.dir"
+            value="${src.dir}/${java}"/>
+  <property name="ruby.src.dir"
+            value="${src.dir}/${ruby}"/>
+  <property name="python.src.dir"
+            value="${src.dir}/${python}"/>
+  <property name="scala.src.dir"
+            value="${src.dir}/${scala}"/>
+  <property name="javascript.src.dir"
+            value="${src.dir}/${javascript}"/>
+  <property name="tcl.src.dir"
+            value="${src.dir}/${tcl}"/>
+	<property name="c#.src.dir"
+	            value="${src.dir}/${c#}"/>
+	  
+  <!-- Temporary source directories -->
+  <property name="java.tmp.src.dir"
+            value="${tmp.dir}/${java}/src"/>
+  <property name="php4.tmp.src.dir"
+            value="${tmp.dir}/${php4}/src"/>
+  <property name="php5.tmp.src.dir"
+            value="${tmp.dir}/${php5}/src"/>
+  <property name="python.tmp.src.dir"
+            value="${tmp.dir}/${python}/src"/>
+  <property name="scala.tmp.src.dir"
+            value="${tmp.dir}/${scala}/src"/>
+  <property name="ruby.tmp.src.dir"
+            value="${tmp.dir}/${ruby}/src"/>
+  <property name="javascript.tmp.src.dir"
+            value="${tmp.dir}/${javascript}/src"/>
+	<property name="c#.tmp.src.dir"
+	            value="${tmp.dir}/${c#}/src"/>
+	            
+  <!-- Temporary dist directories -->
+  <property name="java.tmp.dist.dir"
+            value="${tmp.dir}/${java}/dist"/>
+  <property name="scala.tmp.dist.dir"
+            value="${tmp.dir}/${scala}/dist"/>
+  <property name="javascript.tmp.dist.dir"
+            value="${tmp.dir}/${javascript}/dist"/>
+	<property name="c#.tmp.dist.dir"
+	            value="${tmp.dir}/${c#}/dist"/>
+  
+  <!-- Demo directories -->
+  <property name="php4.demo.dir"
+            value="${demo.dir}/${php4}"/>
+	<property name="php5.demo.dir"
+            value="${demo.dir}/${php5}"/>
+  <property name="java.demo.dir"
+            value="${demo.dir}/${java}"/>
+  <property name="python.demo.dir"
+            value="${demo.dir}/${python}"/>
+  <property name="ruby.demo.dir"
+            value="${demo.dir}/${ruby}"/>
+  <property name="scala.demo.dir"
+            value="${demo.dir}/${scala}"/>
+  <property name="javascript.demo.dir"
+            value="${demo.dir}/${javascript}"/>
+  <property name="c#.demo.dir"
+            value="${demo.dir}/${c#}"/>
+	            
+  <!-- Distribution directories -->
+  <property name="php4.dist.dir"
+            value="${dist.dir}/${php4}"/>
+  <property name="php5.dist.dir"
+            value="${dist.dir}/${php5}"/>
+  <property name="java.dist.dir"
+            value="${dist.dir}/${java}"/>
+  <property name="javadoc.dist.dir"
+	            value="${dist.dir}/javadoc"/>
+  <property name="ruby.dist.dir"
+            value="${dist.dir}/${ruby}"/>
+  <property name="python.dist.dir"
+            value="${dist.dir}/${python}"/>
+  <property name="scala.dist.dir"
+            value="${dist.dir}/${scala}"/>
+  <property name="scaladoc.dist.dir"
+            value="${dist.dir}/${scaladoc}"/>
+  <property name="javascript.dist.dir"
+            value="${dist.dir}/${javascript}"/>
+  <property name="tcl.dist.dir"
+            value="${dist.dir}/${tcl}"/>
+	<property name="c#.dist.dir"
+	            value="${dist.dir}/${c#}"/>
+	            
+  <!-- Test directories -->
+  <property name="java.test.dir"
+            value="${test.dir}/${java}"/>
+  <property name="python.test.dir"
+            value="${test.dir}/${python}"/>
+  <property name="scala.test.dir"
+            value="${test.dir}/${scala}"/>
+
+  <!-- scala stuff -->
+  <property name="scala-compiler.jar"
+            value="${scala.lib.dir}/scala-compiler.jar"/>
+  <property name="scala-library.jar"
+            value="${scala.lib.dir}/scala-library.jar"/>
+  <path id="scala.classpath">
+    <pathelement location="${scala-compiler.jar}"/>
+    <pathelement location="${scala-library.jar}"/>
+  </path>
+  
+
+  <!-- Load licence from file -->
+  <loadfile property="licence.text"
+            srcFile="${licence.filename}"/>
+            
+  <!-- task definitions -->
+  <!-- python -->
+  <taskdef name="py-run" classname="org.pyant.tasks.PythonRunTask"/>
+  <taskdef name="py-test" classname="org.pyant.tasks.PythonTestTask"/>
+  <!-- scala -->
+  <taskdef resource="scala/tools/ant/antlib.xml">
+    <classpath refid="scala.classpath"/>
+  </taskdef>
+
+  <!-- targets -->
+
+  <target name="build"
+          depends="make_dirs,build_php4,build_php5,build_java,build_javadoc,build_ruby,build_python,build_scala,build_scaladoc,build_javascript,build_tcl,build_c#">
+    <description>
+      Build everything
+    </description>
+  </target>
+
+  <!-- create the directories needed for the build -->
+
+  <target name="make_dirs">
+    <echo>Creating directories needed for build</echo>
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${tmp.dir}"/>
+    <mkdir dir="${php4.dist.dir}"/>
+    <mkdir dir="${php5.dist.dir}"/>
+    <mkdir dir="${java.dist.dir}"/>
+    <mkdir dir="${ruby.dist.dir}"/>
+    <mkdir dir="${python.dist.dir}"/>
+    <mkdir dir="${scala.dist.dir}"/> 
+    <mkdir dir="${javascript.dist.dir}"/>
+    <mkdir dir="${tcl.dist.dir}"/>
+    <mkdir dir="${c#.dist.dir}"/>
+    <mkdir dir="${tmp.dir}/${php4}"/>
+    <mkdir dir="${tmp.dir}/${php5}"/>
+    <mkdir dir="${tmp.dir}/${java}"/>
+    <mkdir dir="${tmp.dir}/${javascript}"/>
+    <mkdir dir="${java.tmp.dist.dir}"/>
+    <mkdir dir="${scala.tmp.dist.dir}"/>
+    <mkdir dir="${tmp.dir}/${javadoc}"/>
+    <mkdir dir="${tmp.dir}/${scaladoc}"/>
+    <mkdir dir="${tmp.dir}/${ruby}"/>
+    <mkdir dir="${tmp.dir}/${python}"/>    
+    <mkdir dir="${tmp.dir}/${tcl}"/>
+  	<mkdir dir="${tmp.dir}/${c#}"/>
+    <mkdir dir="${c#.tmp.dist.dir}"/>
+  </target>
+
+  <!-- build the php4 zip and tgz -->
+
+  <target name="build_php4">
+    <description>
+      Build PHP4
+    </description>
+    <echo>Building PHP4 from ${php4.src.dir} in ${php4.dist.dir}</echo>
+	  <copy todir="${php4.tmp.src.dir}">
+	    <fileset dir="${php4.src.dir}"/>
+	    <filterset>
+	      <filter token="${api.host.token}" value="${api.host}"/>
+		  <filter token="${api.path.token}" value="${api.path}"/>
+	      <filter token="${licence.token}" value="${licence.text}"/>
+	    </filterset>
+	    <fileset file="${licence.filename}"/>
+    </copy>
+    <tar destfile="${tmp.dir}/${php4}/${base.filename}-${php4}-${version}.tar"
+           basedir="${php4.tmp.src.dir}"/>
+    <gzip destfile="${php4.dist.dir}/${base.filename}-${php4}-${version}.tgz"
+          src="${tmp.dir}/${php4}/${base.filename}-${php4}-${version}.tar"/>
+    <zip destfile="${php4.dist.dir}/${base.filename}-${php4}-${version}.zip"
+        basedir="${php4.tmp.src.dir}"/>
+	<copy todir="${php4.dist.dir}">
+      <fileset dir="${php4.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>		
+	</target>
+
+  <!-- build the php5 zip and tar -->
+
+  <target name="build_php5">
+    <description>
+      Build PHP5
+    </description>
+    <echo>Building PHP5 from ${php5.src.dir} in ${php5.dist.dir}</echo>
+    <copy todir="${php5.tmp.src.dir}">
+	    <fileset dir="${php5.src.dir}"/>
+	    <filterset>
+	      <filter token="${api.host.token}" value="${api.host}"/>
+		  <filter token="${api.path.token}" value="${api.path}"/>
+	      <filter token="${licence.token}" value="${licence.text}"/>
+	    </filterset>
+	    <fileset file="${licence.filename}"/>
+    </copy>
+    <tar destfile="${tmp.dir}/${php5}/${base.filename}-${php5}-${version}.tar"
+         basedir="${php5.tmp.src.dir}"/>
+    <gzip destfile="${php5.dist.dir}/${base.filename}-${php5}-${version}.tgz"
+          src="${tmp.dir}/${php5}/${base.filename}-${php5}-${version}.tar"/>
+    <zip destfile="${php5.dist.dir}/${base.filename}-${php5}-${version}.zip"
+         basedir="${php5.tmp.src.dir}"/>
+	<copy todir="${php5.dist.dir}">
+      <fileset dir="${php5.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <!-- build the scala jar, zip and tgz -->
+  <target name="build_scala" depends="make_dirs">
+    <description>
+      Build Scala
+    </description>
+    <echo>Building Scala from ${scala.src.dir} in ${scala.dist.dir}</echo>
+    <copy todir="${scala.tmp.src.dir}">
+      <fileset dir="${scala.src.dir}" excludes="**/*.class"/>
+      <filterset>
+        <filter token="${api.endpoint.token}" value="${api.endpoint}"/>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+      <fileset file="${licence.filename}"/>
+    </copy>
+    <scalac srcdir="${scala.tmp.src.dir}"
+            destdir="${scala.tmp.dist.dir}"
+            encoding="UTF-8">
+      <classpath refid="scala.classpath"/>
+    </scalac>
+    <copy file="${licence.filename}" todir="${scala.tmp.dist.dir}"/>
+    <jar destfile="${scala.dist.dir}/${base.filename}-${scala}-${version}.jar"
+         basedir="${scala.tmp.dist.dir}"
+         excludes="**/Test*"/>
+    <tar destfile="${tmp.dir}/${scala}/${base.filename}-${scala}-${version}-src.tar"
+         basedir="${scala.tmp.src.dir}"/>
+    <gzip destfile="${scala.dist.dir}/${base.filename}-${scala}-${version}-src.tgz"
+          src="${tmp.dir}/${scala}/${base.filename}-${scala}-${version}-src.tar"/>
+    <zip destfile="${scala.dist.dir}/${base.filename}-${scala}-${version}-src.zip"
+         basedir="${scala.tmp.src.dir}"/>
+    <copy todir="${scala.dist.dir}">
+      <fileset dir="${scala.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <!-- scaladoc -->
+
+  <target name="build_scaladoc" depends="build_scala">
+    <description>
+      Build Scaladoc
+    </description>
+    <echo>Building Scaladoc from ${scala.src.dir} in ${scala.dist.dir}</echo>
+    <scaladoc srcdir="${scala.src.dir}"
+              destdir="${tmp.dir}/${scaladoc}"
+              windowtitle="buy.at Scala SDK ${version}"
+              doctitle="buy.at Scala SDK ${version}"
+              encoding="UTF-8">
+      <classpath>
+        <pathelement location="."/>
+      </classpath>
+      <classpath refid="scala.classpath"/>
+    </scaladoc>
+    <tar destfile="${tmp.dir}/${scala}/${base.filename}-${scala}-${version}-doc.tar"
+         basedir="${tmp.dir}/${scaladoc}"/>
+    <gzip destfile="${scala.dist.dir}/${base.filename}-${scala}-${version}-doc.tgz"
+          src="${tmp.dir}/${scala}/${base.filename}-${scala}-${version}-doc.tar"/>
+    <zip destfile="${scala.dist.dir}/${base.filename}-${scala}-${version}-doc.zip"
+         basedir="${tmp.dir}/${scaladoc}"/>
+  	<copy todir="${scaladoc.dist.dir}">
+      <fileset dir="${tmp.dir}/${scaladoc}"/>
+  	</copy>
+  </target>
+
+  <!-- build the java jar and zip and tgz for the java source -->
+
+  <target name="build_java" depends="make_dirs">
+    <description>
+      Build Java
+    </description>
+    <echo>Building Java from ${java.src.dir} in ${java.dist.dir}</echo>
+    <copy todir="${java.tmp.src.dir}">
+      <fileset dir="${java.src.dir}" excludes="**/*.class"/>
+      <filterset>
+        <filter token="${api.endpoint.token}" value="${api.endpoint}"/>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+      <fileset file="${licence.filename}"/>
+    </copy>
+    <javac srcdir="${java.tmp.src.dir}"
+           destdir="${java.tmp.dist.dir}"
+           classpath="."
+           debug="off"
+           source="1.5"/>
+    <copy file="${licence.filename}" todir="${java.tmp.dist.dir}"/>
+    <jar destfile="${java.dist.dir}/${base.filename}-${java}-${version}.jar"
+         basedir="${java.tmp.dist.dir}"
+         excludes="**/Test*"/>
+    <tar destfile="${tmp.dir}/${java}/${base.filename}-${java}-${version}-src.tar"
+         basedir="${java.tmp.src.dir}"/>
+    <gzip destfile="${java.dist.dir}/${base.filename}-${java}-${version}-src.tgz"
+          src="${tmp.dir}/${java}/${base.filename}-${java}-${version}-src.tar"/>
+    <zip destfile="${java.dist.dir}/${base.filename}-${java}-${version}-src.zip"
+         basedir="${java.tmp.src.dir}"/>
+    <copy todir="${java.dist.dir}">
+      <fileset dir="${java.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>
+  </target>
+  
+  <target name="build_javadoc" depends="build_java">
+    <description>
+      Build Javadoc
+    </description>
+    <echo>Building Javadoc from ${java.src.dir} in ${java.dist.dir}</echo>
+    <javadoc sourcepath="${java.src.dir}"
+            destdir="${tmp.dir}/${javadoc}"
+            classpath="."/>
+    <tar destfile="${tmp.dir}/${java}/${base.filename}-${java}-${version}-doc.tar"
+         basedir="${tmp.dir}/${javadoc}"/>
+    <gzip destfile="${java.dist.dir}/${base.filename}-${java}-${version}-doc.tgz"
+          src="${tmp.dir}/${java}/${base.filename}-${java}-${version}-doc.tar"/>
+    <zip destfile="${java.dist.dir}/${base.filename}-${java}-${version}-doc.zip"
+         basedir="${tmp.dir}/${javadoc}"/>
+  	<copy todir="${javadoc.dist.dir}">
+      <fileset dir="${tmp.dir}/${javadoc}"/>
+  	</copy>
+  </target>
+
+  <!-- build the ruby zip and tgz -->
+
+  <target name="build_ruby">
+    <description>
+      Build ruby
+    </description>
+    <echo>Building Ruby from ${ruby.src.dir} in ${ruby.dist.dir}</echo>
+    <copy todir="${ruby.tmp.src.dir}">
+      <fileset dir="${ruby.src.dir}"/>
+      <filterset>
+        <filter token="${api.endpoint.token}" value="${api.endpoint}"/>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+      <fileset file="${licence.filename}"/>
+    </copy>
+    <tar destfile="${tmp.dir}/${ruby}/${base.filename}-${ruby}-${version}.tar"
+         basedir="${ruby.tmp.src.dir}"/>
+    <gzip destfile="${ruby.dist.dir}/${base.filename}-${ruby}-${version}.tgz"
+          src="${tmp.dir}/${ruby}/${base.filename}-${ruby}-${version}.tar"/>
+    <zip destfile="${ruby.dist.dir}/${base.filename}-${ruby}-${version}.zip"
+         basedir="${ruby.tmp.src.dir}"/>
+    <copy todir="${ruby.dist.dir}">
+      <fileset dir="${ruby.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <!-- build the python zip and tgz -->
+
+  <target name="build_python" depends="make_dirs">
+    <description>
+      Build python
+    </description>
+    <echo>Building python from ${python.src.dir} in ${python.dist.dir}</echo>
+    <copy todir="${python.tmp.src.dir}">
+	    <fileset dir="${python.src.dir}"/>
+	    <filterset>
+	      <filter token="${api.endpoint.token}" value="${api.endpoint}"/>
+	      <filter token="${licence.token}" value="${licence.text}"/>
+	    </filterset>
+	    <fileset file="${licence.filename}"/>
+    </copy>
+    <tar destfile="${tmp.dir}/${python}/${base.filename}-${python}-${version}.tar"
+         basedir="${python.tmp.src.dir}"/>
+    <gzip destfile="${python.dist.dir}/${base.filename}-${python}-${version}.tgz"
+          src="${tmp.dir}/${python}/${base.filename}-${python}-${version}.tar"/>
+    <zip destfile="${python.dist.dir}/${base.filename}-${python}-${version}.zip"
+         basedir="${python.tmp.src.dir}"/>
+    <copy todir="${python.dist.dir}">
+      <fileset dir="${python.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <!-- build the tcl zip and tgz -->
+
+  <target name="build_tcl">
+    <description>
+      Build tcl
+    </description>
+    <echo>Building tcl from ${tcl.src.dir} in ${tcl.dist.dir}</echo>
+    <tar destfile="${tmp.dir}/${tcl}/${base.filename}-${tcl}-${version}.tar"
+         basedir="${tcl.src.dir}"/>
+    <gzip destfile="${tcl.dist.dir}/${base.filename}-${tcl}-${version}.tgz"
+          src="${tmp.dir}/${tcl}/${base.filename}-${tcl}-${version}.tar"/>
+    <zip destfile="${tcl.dist.dir}/${base.filename}-${tcl}-${version}.zip"
+         basedir="${tcl.src.dir}"/>
+  </target>
+
+  
+  <!-- build the javascript zip and tar -->
+
+  <target name="build_javascript">
+    <description>
+      Build javascript
+    </description>
+    <echo>Building javascript from ${javascript.src.dir} in ${javascript.dist.dir}</echo>
+    <copy todir="${javascript.tmp.src.dir}">
+	    <fileset dir="${javascript.src.dir}"/>
+	    <filterset>	      
+		  <filter token="${api.endpoint.token}" value="${api.endpoint}"/>
+	      <filter token="${licence.token}" value="${licence.text}"/>
+	    </filterset>
+	    <fileset file="${licence.filename}"/>
+    </copy>
+    <tar destfile="${tmp.dir}/${javascript}/${base.filename}-${javascript}-${version}.tar"
+         basedir="${javascript.tmp.src.dir}"/>
+    <gzip destfile="${javascript.dist.dir}/${base.filename}-${javascript}-${version}.tgz"
+          src="${tmp.dir}/${javascript}/${base.filename}-${javascript}-${version}.tar"/>
+    <zip destfile="${javascript.dist.dir}/${base.filename}-${javascript}-${version}.zip"
+         basedir="${javascript.tmp.src.dir}"/>
+         
+  	<copy todir="${javascript.tmp.dist.dir}">
+      <fileset dir="${javascript.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    <fileset file="${licence.filename}"/>
+    </copy>
+  
+    <tar destfile="${tmp.dir}/${javascript}/${demo}-${version}.tar"
+         basedir="${javascript.tmp.dist.dir}"/>
+    <gzip destfile="${javascript.dist.dir}/${demo}-${javascript}-${version}.tgz"
+          src="${tmp.dir}/${javascript}/${demo}-${version}.tar"/>
+    <zip destfile="${javascript.dist.dir}/${demo}-${javascript}-${version}.zip"
+         basedir="${javascript.tmp.dist.dir}"/>
+  </target>
+	
+  <target name="build_c#">
+    <description>
+      Build C#
+    </description>
+    <echo>Building c# from ${c#.src.dir} in ${c#.dist.dir}</echo>
+    <copy todir="${c#.tmp.src.dir}">
+      <fileset dir="${c#.src.dir}" includes="**/*.cs, **/*.build"/>
+      <filterset>
+        <filter token="${api.endpoint.token}" value="${api.endpoint}"/>
+        <filter token="${api.endpoint.short.token}" value="${api.endpoint.short}"/>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+      <fileset file="${licence.filename}"/>
+    </copy>
+    <dn:nant buildfile="${c#.tmp.src.dir}/nant.build">
+      <target name="build"/>
+    </dn:nant>
+  	<copy file="${licence.filename}" todir="${c#.tmp.dist.dir}"/>
+  	<tar destfile="${tmp.dir}/${c#}/${base.filename}-${c#}-${version}.tar"
+         basedir="${c#.tmp.dist.dir}"/>
+    <gzip destfile="${c#.dist.dir}/${base.filename}-${c#}-${version}.tgz"
+          src="${tmp.dir}/${c#}/${base.filename}-${c#}-${version}.tar"/>
+    <zip destfile="${c#.dist.dir}/${base.filename}-${c#}-${version}.zip"
+         basedir="${c#.tmp.dist.dir}"/>
+    <tar destfile="${tmp.dir}/${c#}/${base.filename}-${c#}-${version}-src.tar"
+  	         basedir="${c#.tmp.src.dir}" excludes="**/*.build"/>
+    <gzip destfile="${c#.dist.dir}/${base.filename}-${c#}-${version}-src.tgz"
+          src="${tmp.dir}/${c#}/${base.filename}-${c#}-${version}-src.tar"/>
+    <zip destfile="${c#.dist.dir}/${base.filename}-${c#}-${version}-src.zip"
+         basedir="${c#.tmp.src.dir}" excludes="**/*.build"/>
+    <copy todir="${c#.dist.dir}">
+      <fileset dir="${c#.demo.dir}"/>
+      <filterset>
+        <filter token="${licence.token}" value="${licence.text}"/>
+      </filterset>
+    </copy>
+    <copy file="${licence.filename}" todir="${c#.tmp.dist.dir}"/>
+  </target>
+  
+  <!-- clean up everything -->
+
+  <target name="clean" depends="clean_tmp,clean_dist">
+    <description>
+      Clean up everything
+    </description>
+  </target>
+
+  <!-- remove the tmp directory -->
+
+  <target name="clean_tmp">
+    <echo>Removing temp directory</echo>
+    <delete dir="${tmp.dir}"/>
+  </target>
+
+  <!-- remove the dist directory -->
+
+  <target name="clean_dist">
+    <echo>Removing non-svn files from dist directory</echo>
+    <delete verbose="true" includeemptydirs="true">
+      <fileset dir="${dist.dir}" includes="**/*" excludes="**/.svn"/>
+    </delete>
+  </target>
+  
+   <!-- run php4 demo -->
+  <target name="demo_php4" depends="build_php4">
+    <description>
+      Demo php4
+    </description>
+    <copy todir="${tmp.dir}/${php4}">
+      <fileset dir="${php4.demo.dir}"/>
+    </copy>
+    <echo>Outputting to ${tmp.dir}/${php4}/demo.txt</echo>
+    <exec executable="php" dir="${tmp.dir}/${php4}" failonerror="true" logError="true" output="${tmp.dir}/${php4}/demo.txt">
+      <arg value="-d include_path=src"/>
+      <arg value="Demo.php"/>
+    </exec>
+  </target>
+    
+   <!-- run php5 demo -->
+  <target name="demo_php5" depends="build_php5">
+    <description>
+      Demo php5
+    </description>
+    <copy todir="${tmp.dir}/${php5}">
+      <fileset dir="${php5.demo.dir}"/>
+    </copy>
+    <echo>Outputting to ${tmp.dir}/${php5}/demo.txt</echo>
+    <exec executable="php" dir="${tmp.dir}/${php5}" failonerror="true" logError="true" output="${tmp.dir}/${php5}/demo.txt">
+      <arg value="-d include_path=src"/>
+      <arg value="Demo.php"/>
+    </exec>
+  </target>
+  
+  <!-- run java demo -->
+  <target name="demo_java" depends="build_java">
+    <description>
+      Demo Java
+    </description>
+    <javac srcdir="${java.demo.dir}"
+           destdir="${java.tmp.dist.dir}"
+           classpath="."
+           debug="off"
+           source="1.5"/>
+    <java classname="Demo">
+      <classpath>
+        <pathelement path="${java.class.path}"/>
+        <pathelement location="${java.tmp.dist.dir}"/>
+      </classpath>
+    </java>
+  </target>
+  
+  <!-- run python demo -->
+  <target name="demo_python" depends="build_python">
+    <description>
+      Demo Python
+    </description>
+    <py-run script="${python.demo.dir}/Demo.py" pythonpath="${python.tmp.src.dir}" optimize="0"/>
+  </target>
+  
+  <!-- run ruby demo -->
+  <target name="demo_ruby" depends="build_ruby">
+    <description>
+      Demo Ruby
+    </description>
+    <copy todir="${tmp.dir}/${ruby}">
+      <fileset dir="${ruby.demo.dir}"/>
+    </copy>
+    <echo>Outputting to ${tmp.dir}/${ruby}/demo.out</echo>
+    <exec executable="ruby" dir="${tmp.dir}/${ruby}" failonerror="true" logError="true" output="${tmp.dir}/${ruby}/demo.out">
+      <arg value="-Isrc"/>
+      <arg value="Demo.rb"/>
+    </exec>
+  </target>
+  
+  <!-- run C# demo -->
+  <target name="demo_c#" depends="build_c#">
+    <description>
+      Demo C#
+    </description>
+  	<echo>Building c# from ${c#.src.dir} in ${c#.dist.dir}</echo>
+    <dn:nant buildfile="${c#.tmp.src.dir}/nant.build">
+      <target name="demo"/>
+    </dn:nant>
+  </target>
+	  
+  <!-- run all tests -->
+  <target name="test" depends="test_java,test_python">
+    <description>
+      Run all tests
+    </description>
+  </target>
+  
+  <!-- run java tests -->
+  <target name="test_java" depends="build_java">
+    <description>
+      Test Java
+    </description>
+    <echo>Building Java tests from ${java.test.dir}</echo>
+    <echo>Classpath will be: ${tmp.dir}/${java}:${java.test.dir}/lib/junit-4.8.jar</echo>
+    <javac srcdir="${java.test.dir}"
+           destdir="${java.tmp.dist.dir}"
+           classpath="${java.test.dir}/lib/junit-4.8.jar:."
+           debug="off"
+           source="1.5"/>
+    <mkdir dir="${tmp.dir}/junit_results"/>
+    <junit printsummary="yes" haltonfailure="no">
+	    <classpath>
+        <pathelement location="${java.tmp.dist.dir}"/>
+        <pathelement path="${java.test.dir}/lib/junit-4.8.jar"/>
+	    </classpath>
+	    <formatter type="plain"/>
+	    <test name="TestHarness" todir="${tmp.dir}/junit_results"/>
+    </junit>
+  </target>
+  
+  <!-- run python tests -->
+  <target name="test_python" depends="build_python">
+    <description>
+      Test Python
+    </description>
+    <echo>${ant.home}</echo>
+    <py-test pythonpath="${python.tmp.src.dir}" dir="${python.test.dir}">
+      <fileset dir="${python.test.dir}">
+        <include name="**/*Test*.py"/>
+      </fileset>
+    </py-test>
+  </target>
+  
+  <!-- build and test everything -->
+  <target name="all" depends="build,test">
+    <description>
+      Build and test everything
+    </description>
+  </target>
+
+</project>

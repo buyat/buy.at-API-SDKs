@@ -1,0 +1,30 @@
+<project basedir="." default="empty">
+  <target name="build" description="compiles the source code">
+    <echo>Compiling C#</echo>
+    <csc target="library" output="../dist/BuyAtAPI.dll">
+      <sources failonempty="true">
+        <include name="**/*.cs" />
+      </sources>
+      <references>
+        <include name="System.dll" />
+        <include name="System.Web.Services.dll" />
+        <include name="System.Xml.dll" />  
+      </references>
+    </csc>
+  </target>
+  <target name="demo" description="runs the demo">
+    <echo>Compiling C# demo</echo>
+    <csc target="exe" output="../dist/Demo.exe">
+      <sources failonempty="true">
+        <include name="../../../../demos/csharp/Demo.cs" />
+      </sources>
+      <references>
+        <include name="System.dll" />
+        <include name="System.Web.Services.dll" />
+        <include name="System.Xml.dll" />  
+        <include name="../dist/BuyAtAPI.dll" />
+      </references>
+    </csc>
+    <exec program="../dist/Demo.exe"/>
+  </target>
+</project>

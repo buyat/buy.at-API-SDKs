@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Buyat SDK: JavaScript Demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="BuyatAPIClient.js"></script>
+     <script type="text/javascript" src="Demo.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>JavaScript Demo</h1>
+    </div>
+    <div id="content">
+      <script type="text/javascript">
+         buyatDemo.init();
+      </script>
+      <input id="query" value="black">
+      <input id="input_box" type="button" value="Search Products" onclick="buyat.searchProducts('results', document.getElementById('query').value, 'buyatDemo.renderProducts');"><br /><br />
+ 	
+      <a href="javascript:void(0)" onclick="buyat.apiEcho('results', 'Hello', 'buyatDemo.renderApiEcho')" >buyat.test.echo&message=Hello</a><br />
+      <a href="javascript:void(0)" onclick="buyat.getCategoryTree('results', 'buyatDemo.renderCategories')" >buyat.affiliate.category.tree</a><br />
+      <a href="javascript:void(0)" onclick="buyat.listLevel1Categories('results', 'buyatDemo.renderCategories')" >buyat.affiliate.category.listlevel1</a><br />
+      <a href="javascript:void(0)" onclick="buyat.listLevel2Categories('results', 20, 'buyatDemo.renderCategories')" >buyat.affiliate.category.listlevel2&level1_category_id=20</a><br />
+      <a href="javascript:void(0)" onclick="buyat.lisProgrammes('results', 'buyatDemo.renderProgrammes')" >buyat.affiliate.programme.list</a><br />
+      <a href="javascript:void(0)" onclick="buyat.getProgramme('results', 301, 'buyatDemo.renderProgramme')" >buyat.affiliate.programme.info&programme_id=301</a><br />
+      <a href="javascript:void(0)" onclick="buyat.lisFeeds('results', 'buyatDemo.renderFeeds')" >buyat.affiliate.feed.list</a><br />
+      <a href="javascript:void(0)" onclick="buyat.getFeed('results', 367, 'buyatDemo.renderFeed')" >buyat.affiliate.feed.info&feed_id=367</a><br />
+      <a href="javascript:void(0)" onclick="buyat.getProduct('results', 126993090, 'buyatDemo.renderProduct')" >buyat.affiliate.product.info&product_id=126993090</a><br />
+      <a href="javascript:void(0)" onclick="buyat.getDeepLink('results', 'http://www.virginmobile.com/vm/home.do', 'buyatDemo.renderDeepLink')" >buyat.affiliate.linkengine.create&url=http://www.virginmobile.com/vm/home.do</a><br />
+       
+ 	<a href="javascript:void(0)" onclick="buyat.getFeedUrl('results', 367, 'buyatDemo.renderFeedUrl')" >buyat.affiliate.feed.geturl&feed_id=367</a> <br />
+  	<a href="javascript:void(0)" onclick="buyat.getFeedUrl('results', 367, 'buyatDemo.renderFeedUrl', 'XMLGZIP',0 , 10, '','y', 'y', 'y',  20)" >buyat.affiliate.feed.geturl&feed_id=367</a> Get feed URL for feed 367 in gzipped XML format, with level 1 category id = 20, using HTTPS, reverse mapping the XML, and restricting the results to Bestsellers  <br />
+
+   </div>
+    <div id="results"></div>
+  </body>
+</html>

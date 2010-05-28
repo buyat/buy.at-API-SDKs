@@ -1,0 +1,5 @@
+api.endpoint=http://localhost/api/api.php
+api.path=/api/api.php?requestmethod=xml&responsemethod=php
+api.host=localhost
+api.endpoint.short=http://localhost/api
+scala.lib.dir=c:/scala/lib

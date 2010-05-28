@@ -1,0 +1,5 @@
+api.endpoint=http://productapi.perfb.com/api/api.php
+api.path=/api/api.php?requestmethod=xml&responsemethod=php
+api.host=productapi.perfb.com
+api.endpoint.short=http://productapi.perfb.com/api
+scala.lib.dir=c:/scala/lib
